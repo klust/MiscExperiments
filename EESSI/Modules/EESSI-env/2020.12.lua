@@ -135,7 +135,7 @@ setenv( "EESSI_EPREFIX_PYTHON",  pathJoin( eprefix, "/usr/bin/python" ) )
 
 -- TODO
 local detect_command = pathJoin( eprefix, "/usr/bin/python" ) .. ' ' ..
-                       pathJoin( eprefix, '}/init/eessi_software_subdir_for_host.py' ) .. ' ' ..  
+                       pathJoin( eessi_root, eessi_version, '/init/eessi_software_subdir_for_host.py' ) .. ' ' ..  
                        pathJoin( eessi_root, eessi_version )
 LmodMessage( 'TODO: Can we now run ' .. detect_command .. ' and capture the output instead of using the full mapping?')
 
