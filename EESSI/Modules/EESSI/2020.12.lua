@@ -1,6 +1,16 @@
 local eessi_version = "2020.12"
 local eessi_root = "/cvmfs/pilot.eessi-hpc.org/"
 
+local archspec_cpu = os.getenv( 'EESSI_ARCHSPEC_CPU' )
+if ( archspec_cpu == nil ) then
+    LmodError( 'EESSI: Please set the environment variable EESSI_ARCHSPEC_CPU to the CPU in your system as determined by archspec' )
+end
+
+--
+-- We do need some packages unfortunately that should be pretty standard.
+--
+local posix = require( 'posix' )
+
 -- Discovering which software directories to use:
 -- - Option 1: Detect the cpu architecture as returned by archspec cpu 
 --   and use a mapping in the module file to map that onto the triple 
@@ -62,7 +72,29 @@ arch_mapping = {
     graviton2 =      { family = 'aarch64',                   arch = 'graviton2' }
 }
 
-local eessi_os_type =    "linux"
+supported_family = { x86_64 = true, ppc64le = true,  aarch64 = true }
+
+--
+-- Detect whatever we can detect relatively safely
+--
+local uname_os =     posix.uname( '%s' )
+local uname_family = posix.uname( '%m' )
+
+--
+-- Initilze a number of variables with what we already have
+--
+
+local eessi_os_type = '' 
+if ( uname_os == 'Linux' ) then
+    eessi_os_type = 'linux'
+elseif ( uanme_os == 'Darwin' ) then
+    eessi_os_type = 'macos'
+else
+    LmodError( 'EESSI: The operating system ' .. uname_os .. ' as reported by uname -s is not supported' )
+end
+if ( not supported_family[uname_family] ) then
+    LmodError( 'EESSI: The processor family ' .. uname_family .. ' as reported by uname -m is not supported' )
+end
 local eessi_cpu_family = arch_mapping[archspec_cpu].family
 local eessi_cpu_vendor = arch_mapping[archspec_cpu].vendor
 local eessi_arch =       arch_mapping[archspec_cpu].arch
