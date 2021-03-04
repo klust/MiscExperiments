@@ -56,7 +56,7 @@ local whatisstring = string.gsub(
 "EESSI_VERSION", eessi_version )
 whatis( whatisstring )
 
-family( "BaseSoftwwareStack" )
+family( "EESSI" )
 
 --
 -- Detect whatever we can detect relatively safely and test the values.
@@ -76,11 +76,11 @@ if ( not supported_family[eessi_cpu_family] ) then
     LmodError( 'EESSI: The processor family ' .. eessi_cpu_family .. ' as reported by uname -m is not supported' )
 end
 
-local archspec_cpu = os.getenv( 'EESSI_ARCHSPEC_CPU' ) 
+local archspec_cpu = os.getenv( 'EESSI_HOST_CPU' ) 
 if ( mode() == 'load' ) then
     if ( archspec_cpu == nil ) then
         LmodMessage( 'EESSI: No CPU architecture given, so the generic ' .. eessi_cpu_family .. ' software stack will be used. ' ..
-                      'Set the environment variable EESSI_ARDHSPEC_CPU to the CPU in your system as determined by archspec to get an optimized software stack.'  )
+                      'Set the environment variable EESSI_HOST_CPU to the CPU in your system as determined by archspec to get an optimized software stack.'  )
         archspec_cpu = eessi_cpu_family
     elseif ( arch_mapping[archspec_cpu] == nil ) then
         LmodError( 'EESSI: ' .. archspec_cpu .. ' is an unsupported CPU.' )
@@ -122,12 +122,6 @@ prepend_path( "PATH",            pathJoin( eprefix, "/usr/bin" ) )
 setenv( "EESSI_EPREFIX",         eprefix )
 setenv( "EESSI_EPREFIX_PYTHON",  pathJoin( eprefix, "/usr/bin/python" ) )
 
--- TODO
-local detect_command = pathJoin( eprefix, "/usr/bin/python" ) .. ' ' ..
-                       pathJoin( eessi_root, eessi_version, '/init/eessi_software_subdir_for_host.py' ) .. ' ' ..  
-                       pathJoin( eessi_root, eessi_version )
-LmodMessage( 'TODO: Can we now run ' .. detect_command .. ' and capture the output instead of using the full mapping?')
-
 -- -----------------------------------------------------------------------------
 --
 -- Initialisation of the software layer
@@ -149,17 +143,47 @@ end
 local eessi_software_path = eessi_root .. eessi_version .. "/software/" .. eessi_software_subdir
 -- Double check that the software path indeed exists. Otherwise there is a problem with the mounts
 -- or the EESSI stack is seriously broken.
-if ( not isDir( eessi_software_patjh ) ) then
-    LmodError(  'EESI: Software directory ' .. eessi_softwarE_path .. ' not found, the EESSI distribution seems to be broken' )
+if ( not isDir( eessi_software_path ) ) then
+    LmodError(  'EESI: Software directory ' .. eessi_software_path .. ' not found, the EESSI distribution seems to be broken' )
 end
 setenv( "EESSI_SOFTWARE_SUBDIR", eessi_software_subdir )
 setenv( "EESSI_SOFTWARE_PATH",   eessi_software_path )
 
 -- This block still needs refinement as the init script allows for alternative module 
 -- structures.
-setenv( "EESSI_MODULE_PATH",     pathJoin( eessi_software_path, "/modules/all" ) )
-prepend_path( "MODULEPATH",      pathJoin( eessi_software_path, "/modules/all" ) )
+local eessi_custom_module_path = os.getenv( 'EESSI_CUSTOM_MODULEPATH' )
+local eessi_module_subdir = os.getenv( 'EESSI_MODULE_SUBDIR' )
+local eessi_module_path
+if ( eessi_custom_module_path == nil ) then
+    -- No EESSI_CUSTOM_MODULEPATH set
+    if ( eessi_module_subdir == nil ) then
+        -- Neither EESSI_CUSTOM_MODULEPATH nor EESSI_MODULE_SUBDIR are set, so we
+        -- use the standard module path.
+        eessi_module_path = pathJoin( eessi_software_path, '/modules/all' )
+        if ( not isDir( eessi_module_path ) ) then
+            LmodError( 'EESSI: The default module directory ' .. eessi_module_path .. ' cannot be found. ' ..
+                       'It seems EESSI is broken.' )
+        end
+    else
+        -- EESSI_CUSTOM_module_pathG is not set but EESSI_MODULE_SUBDIR points
+        -- to a different module subdirectory in the software subdirectory.
+        eessi_module_path = pathJoin( eessi_software_path, eessi_module_subdir )
+        if ( not isDir( eessi_module_path ) ) then
+            LmodError( 'EESSI: The module directory ' .. eessi_module_path .. ' cannot be found. ' ..
+                       'The value of EESSI_MODULE_SUBDIR (' .. eessi_module_subdir .. ') may be bad.' )
+        end
+    end
+else
+    eessi_module_path = eessi_custom_module_path
+    if ( not isDir( eessi_module_path ) ) then
+        LmodError( 'EESSI: The module directory ' .. eessi_module_path .. ' cannot be found. ' ..
+                   'The value of EESSI_CUSTOM_MODULEPATH (' .. eessi_custom_module_path .. ') may be bad.' )
+    end
+end
+
+setenv( "EESSI_MODULEPATH", eessi_module_path )
+prepend_path( "MODULEPATH", eessi_module_path )
 
 -- Set LMOD_RC. This may be a problem if it is already set in the system for other reasons!
 -- We use pushenv to ensure that it is set back to the original value when unloading the module.
-pushenv( "LMOD_RC",               pathJoin( eessi_software_path, "/.lmod/lmodrc.lua" ) )
+pushenv( "LMOD_RC", pathJoin( eessi_software_path, "/.lmod/lmodrc.lua" ) )
