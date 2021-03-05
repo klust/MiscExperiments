@@ -2,6 +2,8 @@ outputfile='test.2.2.txt'
 stackversion='2020.12'
 module="EESSI-posix/$stackversion"
 
+export EESSI_HOST_CPU=skylake
+
 export EESSI_MODULE_SUBDIR='modules/tools'
 
 echo -e "\nTest with EESSI_MODULE_SUBDIR=$EESSI_MODULE_SUBDIR, using $module"

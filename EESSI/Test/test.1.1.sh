@@ -2,6 +2,8 @@ outputfile='test.1.1.txt'
 stackversion='2020.12'
 module="EESSI-env/$stackversion"
 
+export EESSI_HOST_CPU=skylake
+
 echo -e "\nTest with no environment variables set, using using $module"
 module load $module
 
