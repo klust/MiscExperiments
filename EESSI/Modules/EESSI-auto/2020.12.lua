@@ -2,7 +2,7 @@
 --  * Uses LUA standard library functions for sting and io
 --  * Requires posix.uname
 -- Calls an external EESSI script for the initialisation.
-local eessi_version = '2020.12'
+local eessi_version = myModuleVersion()
 local eessi_root = '/cvmfs/pilot.eessi-hpc.org/'
 
 --
@@ -96,9 +96,9 @@ setenv( 'EESSI_EPREFIX_PYTHON',  pathJoin( eprefix, '/usr/bin/python3' ) )
 local detect_command = pathJoin( eprefix, "/usr/bin/python" ) .. ' ' ..
                        pathJoin( eessi_root, eessi_version, '/init/eessi_software_subdir_for_host.py' ) .. ' ' ..  
                        pathJoin( eessi_root, eessi_version )
-local file = assert(io.popen( detect_command, 'r') )
-local eessi_software_subdir = file:read( '*all' )
-file:close()
+-- It turns out (as warned for in the documentation) that a newline character is added to the variable
+-- so we need to remove that with gsub
+local eessi_software_subdir = capture(  detect_command ):gsub("%s+", "")
 
 --
 -- Now do the other initialisations of environment variables.
