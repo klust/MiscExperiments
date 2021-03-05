@@ -23,8 +23,10 @@ Some options:
      for that family.
   3. As the steps taken in the previous option are enough to select the right compatibility
      layer, we can then run a script from the init directory to determine the right version of 
-     the software stack. This requires some more advanced Lua programming to capture the output
-     of a command run in the shell.
+     the software stack. Lmod does have the ``capture``  and ``subprocess`` functions
+     to run external programs and capture the output which we can use to run the Python script
+     that is used in the regular EESSI initialisation script.
+
 
 ## Implementation
 
@@ -78,7 +80,6 @@ and functions that are part of the Lua standard libraries (in particular ``strin
   * We assume that the user is running either Linux or macOS and detect which OS is used 
     by looking for a file that should only exist on macOS.
 
-The code is work-in-progress.
 
 ### Variant 2: [EESSI-posix](EESSI-posix)
 
@@ -105,16 +106,22 @@ Similarities and differences with variant 1:
 
 ### Variant 3: [ESSI-auto](EESSI-auto)
 
-This variant builds on variant 2. Whereas in variant 2 we used some limited additional Lua functionality to detect all information needed to start the right compartibility layer and offer at least a working generic software layer without further user input through environment variables, we go one step further in varaint 3 and call the same Python script that is used by the regular initialization script to determine the software layer.
+This variant builds on variant 2. Whereas in variant 2 we used some limited additional 
+Lua functionality to detect all information needed to start the right compartibility layer 
+and offer at least a working generic software layer without further user input through 
+environment variables, we go one step further in varaint 3 and call the same Python script 
+that is used by the regular initialization script to determine the software layer. This can
+be done through functions provided by Lmod.
 
   * The archspec mapping table is no longer needed here. We did maintain the 
     ``supported_family``-table for now as it does help us to produce better error messages.
   * For the initialisation of the compatibility layer we rely on ``uname -s`` and 
     ``uname -m`` as in variant 2.
-  * For the initialisation of the software layer we call the 
-    ``eessi_software_subdir_for_host.py``-script using the Python interpreter from the comatibility layer. It does require some additional Lua functionality to call the script and capture its output.
+  * For the initialisation of the software layer we try to call the 
+    ``eessi_software_subdir_for_host.py``-script using the Python interpreter from the comatibility 
+    layer. For this we use the Lmod ``capture`` function that returns the output of the command,
+    and a string substitution function to remove the trailing newline.
 
-The code is work-in-progress.
 
 ### Possible improvements
 
@@ -133,28 +140,3 @@ The code is work-in-progress.
 | Intel Broadwell E5-2680, CentOS 7               | Linux    | x86_64   |
 | AMD zen2 EPYC 7282, CentOS 8                    | Linux    | x86_64   |
 | AMD zen2 EPYC 7742, Cray                        | Linux    | x86_64   |
-
-'''Lua
--- TODO
-local detect_command = pathJoin( eprefix, "/usr/bin/python" ) .. ' ' ..
-                       pathJoin( eessi_root, eessi_version, '/init/eessi_software_subdir_for_host.py' ) .. ' ' ..  
-                       pathJoin( eessi_root, eessi_version )
-LmodMessage( 'TODO: Can we now run ' .. detect_command .. ' and capture the output instead of using the full mapping?')
-'''
-
-Lua code blocks to call an external routine an read the output:
-```Lua
-local file = assert(io.popen('echo "skylake"', 'r'))
-local output = file:read('*all')
-file:close()
-print(output)
-```
-```Lua
-file = assert(io.popen('sleep 10 ; echo "skylake"', 'r'))
-output = file:read('*all')
-file:close()
-print(output)
-```
-
-
-
