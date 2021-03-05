@@ -2,12 +2,11 @@
 
 ## External information
 
-  * [EESSI Software Layer issue $68](https://github.com/EESSI/software-layer/issues/68)
+  * [EESSI Software Layer issue #68](https://github.com/EESSI/software-layer/issues/68)
 
 ## Possible approaches
 
-The main problem is to detect the operating system and the necessary characteristics to determine the
-optimal version of the software stack.
+The main challenge in the development of this module is to detect the operating system and the necessary characteristics to determine the optimal version of the software stack.
 
 Some options:
   1. Let the system define an environment variable for the CPU architecture as would be returned 
@@ -79,7 +78,7 @@ and functions that are part of the Lua standard libraries (in particular ``strin
   * We assume that the user is running either Linux or macOS and detect which OS is used 
     by looking for a file that should only exist on macOS.
 
-TODO
+The code is work-in-progress.
 
 ### Variant 2: EESSI-posix
 
@@ -115,6 +114,7 @@ This variant builds on variant 2. Whereas in variant 2 we used some limited addi
   * For the initialisation of the software layer we call the 
     ``eessi_software_subdir_for_host.py``-script using the Python interpreter from the comatibility layer. It does require some additional Lua functionality to call the script and capture its output.
 
+The code is work-in-progress.
 
 ## Additional stuff used during the design
 
