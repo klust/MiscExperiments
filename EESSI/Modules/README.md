@@ -61,7 +61,7 @@ These variables will be restored to their original value when unloading the modu
 
 We tried to do the same with ``PS1`` but that didn't work. After unloading, no prompt was visible. It is not clear what is causing this. It may just be that Lmod gets confused with the many special characters that may be present in the prompt.
 
-### Variant 1: EESSI-env
+### Variant 1: [ESSI-env](EESSI-env)
 
 This variant uses only functions listed in the Lmod manual page 
 "[Lua Modulefile Functions"](https://lmod.readthedocs.io/en/latest/050_lua_modulefiles.html)
@@ -103,7 +103,7 @@ Similarities and differences with variant 1:
         to determinse which version of the software layer to offer.
   * Except for those local changes in the code, the module is identical to variant 1.
 
-### Variant 3: EESSI-auto
+### Variant 3: [ESSI-auto](EESSI-auto)
 
 This variant builds on variant 2. Whereas in variant 2 we used some limited additional Lua functionality to detect all information needed to start the right compartibility layer and offer at least a working generic software layer without further user input through environment variables, we go one step further in varaint 3 and call the same Python script that is used by the regular initialization script to determine the software layer.
 
@@ -115,6 +115,13 @@ This variant builds on variant 2. Whereas in variant 2 we used some limited addi
     ``eessi_software_subdir_for_host.py``-script using the Python interpreter from the comatibility layer. It does require some additional Lua functionality to call the script and capture its output.
 
 The code is work-in-progress.
+
+### Possible improvements
+
+  * Make unloading the module cleaner. There are cases where there are some leftovers, especially in the PATHS.
+    It may not be possible to totally prevent, but we may be able to do better. I guess the problems may come
+    from calling prepend_path with a different argument then while loading the module so that the directory doesn't
+    get removed from the PATH-style variable.
 
 ## Additional stuff used during the design
 
