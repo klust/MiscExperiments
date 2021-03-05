@@ -63,6 +63,10 @@ activated by the module:
   * EESSI_MODULE_SUBDIR: Can be used to only show a specific selection of the 
     module tree. E.g., EESSI_MODULES_SUBDIR='modules/tools' will only show the 
     modules of the ``tools``-class.
+
+Note that if you make any change to the EESSI_ variables between loading and
+unloading of the module, your environment may not be fully cleaned up after 
+unloading.
 ]], 'EESSI_VERSION', eessi_version )
 help( helpstring )
 

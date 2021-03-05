@@ -61,6 +61,10 @@ activated by the module:
   * EESSI_MODULE_SUBDIR: Can be used to only show a specific selection of the 
     module tree. E.g., EESSI_MODULES_SUBDIR='modules/tools' will only show the 
     modules of the ``tools``-class.
+
+Note that if you make any change to the EESSI_ variables between loading and
+unloading of the module, your environment may not be fully cleaned up after 
+unloading.
 ]], 'EESSI_VERSION', eessi_version )
 help( helpstring )
 
@@ -75,7 +79,7 @@ local eessi_os_type
 if ( isDir( '/Library/Apple' ) ) then
     eessi_os_type = 'macos'
 else
-    eessi_os_type = 'linux''
+    eessi_os_type = 'linux'
 end
 
 local archspec_cpu = os.getenv( 'EESSI_HOST_CPU' ) 
@@ -84,16 +88,19 @@ if ( mode() == 'load' ) then
         LmodError( 'EESSI: No CPU architecture given, please set the environment variable EESSI_HOST_CPU to the CPU in your system as determined by archspec to get an optimized software stack.'  )
     elseif ( arch_mapping[archspec_cpu] == nil ) then
         LmodError( 'EESSI: ' .. archspec_cpu .. ' is an unsupported CPU.' )
-    elseif ( arch_mapping[archspec_cpu].family ~= eessi_cpu_family ) then
-        LmodError( 'EESSI: The CPU ' .. archspec_cpu .. ' does not correspond to the CPU family detected from the OS.' )
     end
 else
-    -- No need to print warnings if we are not loading the module, and error messages don't make sense either
-    -- as they should not occur unless the user already broke the environment by unsetting variables.
+    -- Make sure archspec_cpu is initialised to avoid error messages from the module.
+    -- As the value may be wrong if the user changed or unset EESSI_HOST_CPU since loading the module,
+    -- the results of module unload may still be wrong.
     if ( archspec_cpu == nil ) then
-        archspec_cpu = eessi_cpu_family
+        archspec_cpu = 'x86_64'
+        if ( mode() == 'unload' ) then
+            LmodMessage( 'EESSI: Apparently EESSI_HOST_CPU has been removed, your PATH and MODULEPATH may be wrong after unloading' )
+        end 
     end
 end
+local eessi_cpu_family = arch_mapping[archspec_cpu].family
 
 
 -- The problem with overwriting PS1 is that the variable is not
