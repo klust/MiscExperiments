@@ -120,7 +120,7 @@ end
 setenv( 'EPREFIX',               eprefix )
 prepend_path( 'PATH',            pathJoin( eprefix, '/usr/bin' ) )
 setenv( 'EESSI_EPREFIX',         eprefix )
-setenv( 'EESSI_EPREFIX_PYTHON',  pathJoin( eprefix, '/usr/bin/python' ) )
+setenv( 'EESSI_EPREFIX_PYTHON',  pathJoin( eprefix, '/usr/bin/python3' ) )
 
 -- -----------------------------------------------------------------------------
 --
