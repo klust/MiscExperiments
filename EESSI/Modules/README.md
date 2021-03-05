@@ -80,7 +80,7 @@ and functions that are part of the Lua standard libraries (in particular ``strin
 
 The code is work-in-progress.
 
-### Variant 2: EESSI-posix
+### Variant 2: [EESSI-posix](EESSI-posix)
 
 This variant builds on variant 1, but uses optional Lua-functionality that may not be
 present on all systems. In particular, the current inplementation uses
@@ -134,4 +134,20 @@ local detect_command = pathJoin( eprefix, "/usr/bin/python" ) .. ' ' ..
                        pathJoin( eessi_root, eessi_version )
 LmodMessage( 'TODO: Can we now run ' .. detect_command .. ' and capture the output instead of using the full mapping?')
 '''
+
+Lua code blocks to call an external routine an read the output:
+```Lua
+local file = assert(io.popen('echo "skylake"', 'r'))
+local output = file:read('*all')
+file:close()
+print(output)
+```
+```Lua
+file = assert(io.popen('sleep 10 ; echo "skylake"', 'r'))
+output = file:read('*all')
+file:close()
+print(output)
+```
+
+
 

@@ -12,9 +12,7 @@ local posix = require( 'posix' )
 
 -- Table mapping possible values for arcspec_cpu onto the host triple 
 -- (family, vendor, arch) where vendor is omitted in some cases.
--- The followind can't be a local variable. I'm not sure how dangerous that
--- is for Lmod.
-arch_mapping = {
+local arch_mapping = {
     x86_64 =         { family = 'x86_64',                    arch = 'generic' },
     nocona =         { family = 'x86_64',                    arch = 'generic' },
     core2 =          { family = 'x86_64',                    arch = 'generic' },
@@ -43,7 +41,7 @@ arch_mapping = {
     graviton2 =      { family = 'aarch64',                   arch = 'graviton2' }
 }
 
-supported_family = { x86_64 = true, ppc64le = true,  aarch64 = true }
+local supported_family = { x86_64 = true, ppc64le = true,  aarch64 = true }
 
 local helpstring = string.gsub( [[
 This module enables the EESSI EESSI_VERSION pilot. It is not needed to 
