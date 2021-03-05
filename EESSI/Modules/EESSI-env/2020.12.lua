@@ -1,4 +1,4 @@
-local eessi_version = '2020.12'
+local eessi_version = myModuleVersion()
 local eessi_root = '/cvmfs/pilot.eessi-hpc.org/'
 
 --
