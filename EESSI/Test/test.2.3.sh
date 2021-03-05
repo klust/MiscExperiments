@@ -1,4 +1,4 @@
-outputfile='test.1.0.txt'
+outputfile='test.2.3.txt'
 stackversion='2020.12'
 module="EESSI-auto/$stackversion"
 

@@ -1,4 +1,4 @@
-outputfile='test.1.0.txt'
+outputfile='test.3.0.txt'
 stackversion='2020.12'
 
 export EESSI_CUSTOM_MODULEPATH='/cvmfs/pilot.eessi-hpc.org/2020.12/software/x86_64/generic/modules/math'
