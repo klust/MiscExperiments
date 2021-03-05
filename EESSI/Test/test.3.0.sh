@@ -8,6 +8,7 @@ source /cvmfs/pilot.eessi-hpc.org/$stackversion/init/bash
 
 echo "Init script, default module path" >$outputfile
 env | egrep ^EESSI | sort >>$outputfile
+echo "EPREFIX=$EPREFIX" >>$outputfile
 echo "MODULEPATH=$MODULEPATH" >>$outputfile
 
 cat $outputfile

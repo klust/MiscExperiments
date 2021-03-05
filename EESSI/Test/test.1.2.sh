@@ -9,6 +9,7 @@ module load $module
 
 echo "$module, default module path" >$outputfile
 env | egrep ^EESSI | sort >>$outputfile
+echo "EPREFIX=$EPREFIX" >>$outputfile
 echo "MODULEPATH=$MODULEPATH" >>$outputfile
 
 module unload $module
