@@ -1,7 +1,9 @@
-outputfile='test.1.0.txt'
+outputfile='test.2.0.txt'
 stackversion='2020.12'
 
-echo -e "\nTest with no environment variables set, running the default EESSI init script"
+export EESSI_MODULE_SUBDIR='modules/tools'
+
+echo -e "\nTest with EESSI_MODULE_SUBDIR=$EESSI_MODULE_SUBDIR, running the default EESSI init script"
 source /cvmfs/pilot.eessi-hpc.org/$stackversion/init/bash
 
 echo "Init script, default module path" >$outputfile
