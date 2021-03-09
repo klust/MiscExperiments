@@ -48,7 +48,7 @@ local uname_os = posix.uname( '%s' )
 local eessi_os_type 
 if ( uname_os == 'Linux' ) then
     eessi_os_type = 'linux'
-elseif ( uanme_os == 'Darwin' ) then
+elseif ( uname_os == 'Darwin' ) then
     eessi_os_type = 'macos'
 else
     LmodError( 'EESSI: The operating system ' .. uname_os .. ' as reported by uname -s is not supported' )
